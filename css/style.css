@@ -1,0 +1,130 @@
+/* Geral */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Ubuntu", sans-serif;
+}
+
+body {
+  background: linear-gradient(180deg, #594cee, #000, #8dd0f5 100%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  height: 100vh;
+}
+
+.hide {
+  display: none;
+}
+
+.container {
+  background-color: #5c54ed;
+  color: #fdfdfd;
+
+  box-shadow: rgba(0, 0, 0, .24) 0px 3px 8px;
+
+  padding: 2rem;
+
+  border-radius: 1rem;
+}
+
+/* container__form */
+.container__form h3 {
+  margin-bottom: 1rem;
+}
+
+.container__form__input {
+  display: flex;
+}
+
+.container__form__input input {
+  padding: .8rem;
+
+  border: none;
+  border-radius: 4px;
+
+  flex: 1;
+}
+
+.container__form__input button {
+  padding: .8rem;
+
+  min-width: 50px;
+
+  margin-left: 8px;
+
+  background-color: #8dd0f5;
+  color: #fff;
+
+  border:none;
+  border-radius: 4px;
+
+  cursor: pointer;
+}
+
+/* clima */
+#container__weather-data {
+  border-top: 1px solid #fff;
+
+  margin-top: 1.5rem;
+
+  padding-top: 1.5rem;
+
+  text-align: center;
+}
+
+#container__weather-data h2 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: .6rem;
+}
+
+#container__weather-data h2 i {
+  font-size: 1.2rem;
+}
+
+#container__weather-data span {
+  margin: .6rem;
+}
+
+#container__weather-data p#temperature {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+#country {
+  height: 30px;
+}
+
+#weather-data__description {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: .6rem 0;
+}
+
+#description {
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+#weather-data__details {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#weather-data__details #details__humidity {
+  border-right: 1px solid #fff;
+
+  margin: .6rem;
+
+  padding: .6rem;
+}
+
