@@ -1,62 +1,106 @@
-//variáveis e selecão de elementos
 const apiKey = "dc9982331721ad2f7c8c74d35c86381a";
-const apiCountryURL = "https://flagsapi.com//shiny/64.png";
 
-const cityInput = document.querySelector("#city-input");
-const searchBtn = document.querySelector("#search");
+const searchBtn = document.getElementById('search');
+const cityInput = document.getElementById('city');
+const loadingElement = document.getElementById('weather-loading');
+const errorElement = document.getElementById('weather-error');
+const errorMessage = document.getElementById('error-message');
+const resultElement = document.getElementById('container__weather-data');
+const weatherIcon = document.getElementById('weather-icon');
+const countryFlag = document.getElementById('weather-country-flag');
 
-const cityElement = document.querySelector("#city")
-const tempElement = document.querySelector("#temperature span")
-const descElement = document.querySelector("#description")
-const weatherIconElement = document.querySelector("#weather-icon")
-const countryElement = document.querySelector("#country")
-const humidityElement = document.querySelector("#details__humidity span")
-const windElement = document.querySelector("#details__wind span")
+const countryNames = new Intl.DisplayNames(['pt-BR'], { type: 'region' });
 
-const weatherContainer = document.querySelector("#container__weather-data");
-
-// Funções
-const getWeatherData = async(city) => {
-
-  const apiWeatherURL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`
-
-  const res = await fetch(apiWeatherURL);
-  const data = await res.json();
-
-  return data;
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const showWeatherdata = async (city) => {
- const data = await getWeatherData(city);
+async function getWeatherData(city) {
+    loadingElement.style.display = 'flex';
+    errorElement.style.display = 'none';
+    resultElement.style.display = 'none';
 
- cityElement.innerText = data.name;
- tempElement.innerText = parseInt(data.main.temp);
- descElement.innerText = data.weather[0].description;
- weatherIconElement.setAttribute("src", `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`);
- countryElement.setAttribute("src", `https://flagsapi.com/${data.sys.country}/shiny/64.png`);
- humidityElement.innerText = `${data.main.humidity}%`;
- windElement.innerText = `${data.wind.speed} Km/h`;
+    try {
+        const [response] = await Promise.all([
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}&lang=pt_br`),
+            delay(1200)
+        ]);
+        
+        if (!response.ok) {
+            if (response.status === 404) {
+                throw new Error('Cidade não encontrada. Verifique a grafia.');
+            }
+            throw new Error('Erro ao buscar dados. Tente novamente mais tarde.');
+        }
 
- console.log(data);
+        const data = await response.json();
+        renderWeather(data);
 
-  weatherContainer.classList.remove("hide")
+    } catch (error) {
+        errorMessage.textContent = error.message;
+        errorElement.style.display = 'flex';
+        resultElement.style.display = 'none';
+    } finally {
+        loadingElement.style.display = 'none';
+    }
 }
 
-// Eventos
-searchBtn.addEventListener("click", (e) => {
-  e.preventDefault();
+function renderWeather(data) {
+    const cityNameEl = document.getElementById('weather-city-name');
+    const tempEl = document.getElementById('weather-temp');
+    const descEl = document.getElementById('weather-description');
+    const humidityEl = document.getElementById('weather-humidity');
+    const windEl = document.getElementById('weather-wind');
+    
+    let fullCountryName = data.sys.country;
+    try {
+        fullCountryName = countryNames.of(data.sys.country) || data.sys.country;
+    } catch (e) {
+        fullCountryName = data.sys.country;
+    }
 
-  const city = cityInput.value;
+    cityNameEl.textContent = `${data.name}, ${fullCountryName}`;
+    tempEl.textContent = `${Math.round(data.main.temp)}°C`;
+    descEl.textContent = data.weather[0].description;
+    humidityEl.textContent = `${data.main.humidity}%`;
+    windEl.textContent = `${Math.round(data.wind.speed * 3.6)} km/h`;
 
-  showWeatherdata(city);
-});
+    if (data.sys.country) {
+        countryFlag.src = `https://flagsapi.com/${data.sys.country}/flat/64.png`;
+        countryFlag.style.display = 'inline-block';
+    } else {
+        countryFlag.style.display = 'none';
+    }
 
-cityInput.addEventListener("keyup", (e) => {
-  if (e.code === "Enter") {
-    const city = e.target.value
+    if (data.weather[0].icon) {
+        weatherIcon.src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+        weatherIcon.style.display = 'block';
+    } else {
+        weatherIcon.style.display = 'none';
+    }
 
-    showWeatherdata(city);
-  }
-});
+    resultElement.style.display = 'block';
+}
 
-// adicionar tratamento de erros, sugestões de cidades e fotos de fundo de acordo com cada cidade depois
+function handleSearch() {
+    const city = cityInput.value.trim();
+    if (city) {
+        getWeatherData(city);
+    } else {
+        errorMessage.textContent = 'Por favor, introduza o nome de uma cidade.';
+        errorElement.style.display = 'flex';
+        resultElement.style.display = 'none';
+    }
+}
+
+if (searchBtn) {
+    searchBtn.addEventListener('click', handleSearch);
+}
+
+if (cityInput) {
+    cityInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
+    });
+}

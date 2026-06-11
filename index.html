@@ -1,52 +1,117 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clima agora!</title>
-  <!-- css -->
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Google Fonts -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="robots" content="index, follow">
+
+  <title>SkyFlow — Previsão do Tempo em Tempo Real</title>
+  <meta name="description" content="Consulte as condições climáticas atuais, temperatura, humidade e velocidade do vento de qualquer cidade do mundo instantaneamente com o SkyFlow.">
+  <meta name="keywords" content="previsão do tempo, clima em tempo real, meteorologia, skyflow, temperatura atual, humidade, velocidade do vento">
+  <link rel="canonical" href="https://seu-portfolio.com/skyflow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://seu-portfolio.com/skyflow">
+  <meta property="og:title" content="SkyFlow — Condições Climáticas Globais Instantâneas">
+  <meta property="og:description" content="Descubra a temperatura, vento e humidade de qualquer lugar do planeta com dados precisos e interface de alta performance.">
+  <meta property="og:image" content="https://seu-portfolio.com/skyflow/assets/og-image.jpg">
+  <meta property="og:site_name" content="SkyFlow">
+  <meta property="og:locale" content="pt_BR">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://seu-portfolio.com/skyflow">
+  <meta name="twitter:title" content="SkyFlow — Condições Climáticas Globais Instantâneas">
+  <meta name="twitter:description" content="Descubra a temperatura, vento e humidade de qualquer lugar do planeta com dados precisos e interface de alta performance.">
+  <meta name="twitter:image" content="https://seu-portfolio.com/skyflow/assets/og-image.jpg">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
 </head>
 <body>
-  <div class="container">
-     <div class="container__form">
-        <h3>Confira o clima de uma cidade:</h3>
-        <div class="container__form__input">
-          <input type="text" placeholder="Digite o nome da cidade" id="city-input">
-          <button id="search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-          </button> <!-- search -->
-        </div> <!-- container__form__input -->
-    </div> <!-- container__form  -->
-    <div id="container__weather-data" class="hide">
-      <h2>
-        <i class="fa-solid fa-location-dot"></i>
-        <span id="city"></span>
-        <img src="" alt="Bandeira do país" id="country" />
-      </h2>
-      <p id="temperature"><span></span>&deg;C</p>
-      <div id="weather-data__description">
-        <p id="description"></p>
-        <img src="" alt="Condição do tempo" id="weather-icon">
-      </div> <!-- weather-data__description -->
-      <div id="weather-data__details">
-        <p id="details__humidity">
-          <i class="fa-solid fa-droplet"></i>
-          <span></span>
+
+  <main class="app-container">
+    <header class="search-box">
+      <h1 class="search-box__title">SkyFlow</h1>
+      <p class="search-box__subtitle">
+        Descubra as condições climáticas de qualquer cidade em tempo real.
+      </p>
+
+      <div class="search-box__form">
+        <input
+        type="text"
+        id="city"
+        class="search-box__input"
+        placeholder="Ex: São Paulo, Londres..."
+        autocomplete="off"
+        aria-label="Digitar nome da cidade para previsão do tempo"
+        >
+        <button id="search" class="search-box__button" aria-label="Buscar clima">
+          <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="status-display" aria-live="polite">
+      <div id="weather-loading" class="weather-loading" style="display: none;">
+      <div class="weather-loading__bar-container">
+        <div class="weather-loading__bar"></div>
+      </div>
+      <span class="weather-loading__text">Buscando dados meteorológicos...</span>
+</div>
+
+<div id="container__weather-data" style="display: none;">
+    <h2>
+        <span id="weather-city-name"></span>
+        <img id="weather-country-flag" alt="Bandeira do país" class="weather-card__flag">
+    </h2>
+    <img id="weather-icon" alt="Condições do tempo">
+    <p id="weather-temp"></p>
+    <p id="weather-description"></p>
+    <p>Umidade: <span id="weather-humidity"></span></p>
+    <p>Vento: <span id="weather-wind"></span></p>
+</div>
+
+
+      <div id="weather-error" class="status-display__error" style="display: none;">
+        <span class="status-display__error-icon" aria-hidden="true">⚠️</span>
+        <p id="error-message" class="status-display__error-text">
+          Não foi possível encontrar esta cidade. Tente novamente.
         </p>
-        <p id="details__wind">
-          <i class="fa-solid fa-wind"></i>
-          <span></span>
+      </div>
+    </section>
+
+    <article id="container__weather-data" class="weather-card" style="display: none;">
+      <div class="weather-card__header">
+        <h2 id="weather-city-name" class="weather-card__location">--</h2>
+        <p id="weather-description" class="weather-card__description">
+          --
         </p>
-      </div> <!-- weather-data__details -->
-    </div> <!-- container__weather-data -->
-  </div> <!-- container -->
+      </div>
+
+      <div class="weather-card__main">
+        <span id="weather-temp" class="weather-card__temperature">--°C</span>
+        <div class="weather-card__icon-container">
+          <img id="weather-icon" class="weather-card__icon" src="" alt="Condição climática atual" style="display: none;">
+        </div>
+      </div>
+
+      <div class="weather-card__details">
+        <div class="weather-card__detail-item">
+          <span class="weather-card__detail-label">Humidade</span>
+          <span id="weather-humidity" class="weather-card__detail-value">--%</span>
+        </div>
+        <div class="weather-card__detail-item">
+          <span class="weather-card__detail-label">Vento</span>
+          <span id="weather-wind" class="weather-card__detail-value">-- km/h</span>
+        </div>
+      </div>
+    </article>
+  </main>
 
   <script src="js/script.js"></script>
 </body>
